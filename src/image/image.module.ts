@@ -14,6 +14,5 @@ import { ConfigModule } from "@nestjs/config";
   controllers: [ImageController],
   providers: [ImageService, CloudinaryProvider],
 
-  exports: ['CLOUDINARY'],
 })
 export class ImageModule {}

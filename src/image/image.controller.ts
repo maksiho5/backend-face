@@ -7,27 +7,23 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { diskStorage, StorageEngine } from "multer";
+import { storage } from "./cloudinary.storage";  // Импортируем настройку хранения для Multer
 import { ImageService } from "./image.service";
-import * as faceapi from "face-api.js";
-import { createCanvas, loadImage } from "canvas";
-import { Request } from "express";
-import path from "path";
-import { storage } from "./cloudinary.storage";
+
 @Controller("image")
 export class ImageController {
   constructor(private readonly imageService: ImageService) {}
 
   @Post("uploadFile")
-  @UseInterceptors(FileInterceptor("file", { storage }))
+  @UseInterceptors(FileInterceptor("file", { storage }))  // Используем CloudinaryStorage
   async uploadImage(
     @Body() name: { name: string },
     @UploadedFile() file: Express.Multer.File,
   ) {
     // В Cloudinary уже будет ссылка на изображение
     const savedImage = await this.imageService.saveImage(
-      file.filename,
-      file.path, // Это теперь ссылка Cloudinary!
+      file.filename,  // Имя файла
+      file.path,  // Это ссылка на изображение, полученная от Cloudinary
       name.name,
     );
     return { message: "Изображение загружено!", file: savedImage };
@@ -35,6 +31,6 @@ export class ImageController {
 
   @Get("getFace")
   async getFace() {
-    return await this.imageService.findAll();
+    return await this.imageService.findAll();  // Получаем все изображения из базы данных
   }
 }
