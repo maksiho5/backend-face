@@ -14,7 +14,7 @@ async function bootstrap() {
   // Раздача статики (например, для изображений)
   app.use("/uploads", express.static(join(__dirname, "..", "uploads")));
 
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT || 5000;
   await app.listen(port);
   console.log(`🚀 Server running on port ${port}`);
 }
