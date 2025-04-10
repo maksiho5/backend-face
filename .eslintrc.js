@@ -23,11 +23,5 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unsafe-assignment": "error",
   },
-  "prettier/prettier": [
-    "error",
-    {
-      "singleQuote": true,
-      "parser": "flow"
-    }
-  ]
+  "prettier/prettier": 0
 };

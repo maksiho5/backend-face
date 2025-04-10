@@ -13,45 +13,25 @@ import * as faceapi from "face-api.js";
 import { createCanvas, loadImage } from "canvas";
 import { Request } from "express";
 import path from "path";
-
+import { storage } from "./cloudinary.storage";
 @Controller("image")
 export class ImageController {
   constructor(private readonly imageService: ImageService) {}
 
   @Post("uploadFile")
-  @UseInterceptors(
-    FileInterceptor("file", {
-      storage: diskStorage({
-        destination: "./uploads",
-        filename: (
-          req: Request,
-          file: Express.Multer.File,
-          cb: (error: Error | null, filename: string) => void,
-        ) => {
-          if (!file.originalname) {
-            cb(new Error("Invalid file"), "");
-            return;
-          }
-          const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-          cb(null, `${uniqueSuffix}-${file.originalname}`);
-        },
-      }), // ✅ Явно указываем тип
-    }),
-  )
+  @UseInterceptors(FileInterceptor("file", { storage }))
   async uploadImage(
     @Body() name: { name: string },
     @UploadedFile() file: Express.Multer.File,
   ) {
-    // Сохраняем путь изображения в MongoDB
+    // В Cloudinary уже будет ссылка на изображение
     const savedImage = await this.imageService.saveImage(
       file.filename,
-      file.path,
+      file.path, // Это теперь ссылка Cloudinary!
       name.name,
     );
     return { message: "Изображение загружено!", file: savedImage };
   }
-
-
 
   @Get("getFace")
   async getFace() {
