@@ -1,17 +1,21 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ImageModule } from "./image/image.module";
-import { ConfigModule } from "@nestjs/config";
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    MongooseModule.forRoot(
-      "mongodb+srv://maltimusm:556356Aw@cluster0.t2q5g8a.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
-    ),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: ConfigService.get<string>("MONGODB_URI"), // Получаем URI из переменной окружения
+      }),
+      inject: [ConfigService], 
+    }),
+
     ImageModule,
   ],
 })
